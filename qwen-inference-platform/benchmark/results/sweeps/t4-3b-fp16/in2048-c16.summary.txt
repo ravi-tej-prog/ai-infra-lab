@@ -1,0 +1,28 @@
+Benchmark summary
+status: completed
+verification: REQUIRES_NVIDIA_GPU
+vllm_gpu_baseline: True
+engine: vllm
+model: Qwen/Qwen2.5-3B-Instruct
+endpoint: http://127.0.0.1:8000/v1
+timestamp: 2026-10-17T09:13:07.946068+00:00
+concurrency: 16
+measured_requests: 48
+success_count: 48
+failure_count: 0
+wall_seconds: 65.118854
+TTFT seconds: count=48 mean=3.831498 p50=1.5487 p95=13.775225 min=1.003185 max=15.532566
+TPOT seconds: count=48 mean=0.167655 p50=0.184171 p95=0.223312 min=0.046848 max=0.24325
+E2E seconds: count=48 mean=20.824018 p50=20.140335 p95=33.525071 min=6.466904 max=35.93568
+aggregate output tokens/second: 75.369877
+request throughput per second: 0.737114
+mean inter-chunk latency seconds: 0.167551
+notes:
+- Times are measured on the client. They include network delay and queue wait.
+- TTFT is the arrival of the first non-empty content chunk, not the end of the request.
+- TPOT uses API completion_tokens. Inter-chunk gaps are recorded separately because one SSE event can carry more than one token.
+- A vLLM GPU baseline requires a Linux host with NVIDIA GPUs. This Mac can only be the client. vllm_gpu_baseline stays false unless --mark-nvidia-baseline is passed after that server is actually running.
+- Operator marked this endpoint as a real NVIDIA vLLM server.
+- Each request starts with a random tag, so the server cannot reuse a cached prompt prefix.
+- Warmup request 1 finished and was excluded from the summary.
+- Warmup request 2 finished and was excluded from the summary.
