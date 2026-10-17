@@ -1,0 +1,514 @@
+{
+  "uid": "llm-bench-client",
+  "title": "LLM benchmark \u2014 client view",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "tags": [
+    "llm",
+    "benchmark"
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "run_label",
+        "label": "run",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "query": {
+          "query": "label_values(llm_client_requests_total, run_label)",
+          "refId": "rl"
+        },
+        "definition": "label_values(llm_client_requests_total, run_label)",
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".*",
+        "refresh": 2,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "TTFT p95",
+      "description": "Prefill plus queue wait. Rises with input length, and with concurrency once slots are full.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "spanNulls": false,
+            "showPoints": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le, run_label, input_tokens, concurrency) (rate(llm_client_ttft_seconds_bucket{run_label=~\"$run_label\"}[1m])))",
+          "legendFormat": "{{run_label}} in={{input_tokens}} c={{concurrency}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "TTFT p50",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "spanNulls": false,
+            "showPoints": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.5, sum by (le, run_label, input_tokens, concurrency) (rate(llm_client_ttft_seconds_bucket{run_label=~\"$run_label\"}[1m])))",
+          "legendFormat": "{{run_label}} in={{input_tokens}} c={{concurrency}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "TPOT p50",
+      "description": "Decode time per token. Rises when more sequences share each decode step.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "spanNulls": false,
+            "showPoints": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.5, sum by (le, run_label, input_tokens, concurrency) (rate(llm_client_tpot_seconds_bucket{run_label=~\"$run_label\"}[1m])))",
+          "legendFormat": "{{run_label}} in={{input_tokens}} c={{concurrency}}"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "E2E p95",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "spanNulls": false,
+            "showPoints": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le, run_label, input_tokens, concurrency) (rate(llm_client_e2e_seconds_bucket{run_label=~\"$run_label\"}[1m])))",
+          "legendFormat": "{{run_label}} in={{input_tokens}} c={{concurrency}}"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Output tokens/s (aggregate)",
+      "description": "Throughput across all in-flight requests.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 8,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "spanNulls": false,
+            "showPoints": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (run_label) (rate(llm_client_output_tokens_total{run_label=~\"$run_label\"}[1m]))",
+          "legendFormat": "{{run_label}}"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Prompt tokens/s (prefill load)",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 16,
+        "w": 8,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "spanNulls": false,
+            "showPoints": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (run_label) (rate(llm_client_prompt_tokens_total{run_label=~\"$run_label\"}[1m]))",
+          "legendFormat": "{{run_label}}"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "In flight vs target concurrency",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 16,
+        "w": 8,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "spanNulls": false,
+            "showPoints": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (run_label) (llm_client_in_flight_requests{run_label=~\"$run_label\"})",
+          "legendFormat": "{{run_label}} in flight"
+        },
+        {
+          "refId": "B",
+          "expr": "max by (run_label) (llm_client_target_concurrency{run_label=~\"$run_label\"})",
+          "legendFormat": "{{run_label}} target"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Requests/s by status",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 24,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "spanNulls": false,
+            "showPoints": "auto"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (run_label, status) (rate(llm_client_requests_total{run_label=~\"$run_label\"}[1m]))",
+          "legendFormat": "{{run_label}} {{status}}"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "table",
+      "title": "Per cell over the selected time range (bucket estimates)",
+      "description": "Percentiles from histogram buckets, so they are approximate. sweep.md holds the exact values from the run files.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 32,
+        "w": 24,
+        "h": 12
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.5, sum by (le, run_label, input_tokens, concurrency) (increase(llm_client_ttft_seconds_bucket{run_label=~\"$run_label\"}[$__range])))",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "ttft_p50"
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.95, sum by (le, run_label, input_tokens, concurrency) (increase(llm_client_ttft_seconds_bucket{run_label=~\"$run_label\"}[$__range])))",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "ttft_p95"
+        },
+        {
+          "refId": "C",
+          "expr": "histogram_quantile(0.5, sum by (le, run_label, input_tokens, concurrency) (increase(llm_client_tpot_seconds_bucket{run_label=~\"$run_label\"}[$__range])))",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "tpot_p50"
+        },
+        {
+          "refId": "D",
+          "expr": "histogram_quantile(0.95, sum by (le, run_label, input_tokens, concurrency) (increase(llm_client_tpot_seconds_bucket{run_label=~\"$run_label\"}[$__range])))",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "tpot_p95"
+        },
+        {
+          "refId": "E",
+          "expr": "histogram_quantile(0.95, sum by (le, run_label, input_tokens, concurrency) (increase(llm_client_e2e_seconds_bucket{run_label=~\"$run_label\"}[$__range])))",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "e2e_p95"
+        },
+        {
+          "refId": "F",
+          "expr": "sum by (run_label, input_tokens, concurrency) (increase(llm_client_requests_total{run_label=~\"$run_label\"}[$__range]))",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "requests"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "Value #A": "ttft_p50",
+              "Value #B": "ttft_p95",
+              "Value #C": "tpot_p50",
+              "Value #D": "tpot_p95",
+              "Value #E": "e2e_p95",
+              "Value #F": "requests"
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "sort": [
+              {
+                "field": "concurrency"
+              }
+            ]
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 3
+        },
+        "overrides": []
+      }
+    }
+  ]
+}

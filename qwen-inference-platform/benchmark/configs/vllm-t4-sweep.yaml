@@ -1,0 +1,21 @@
+# vLLM on one NVIDIA T4 (16 GB, Turing, FP16 only, no BF16/FP8). Kaggle notebook.
+# Same grid as ollama-sweep.yaml plus higher concurrency, where GPU batching should pay off.
+# Pass --model to switch between the 3B FP16 and 7B AWQ servers.
+schema_version: 1
+endpoint:
+  base_url: http://127.0.0.1:8000/v1
+  model: Qwen/Qwen2.5-3B-Instruct
+  engine: vllm
+workload:
+  # Server runs with --max-model-len 4096, so input + output stays under it.
+  input_tokens: [128, 512, 2048]
+  max_output_tokens: 128
+  temperature: 0
+  unique_prompts: true
+sweep:
+  concurrency: [1, 4, 8, 16, 32]
+  warmup_requests: 2
+  # More samples than the Mac run so p95 is not just the slowest request.
+  min_requests: 16
+  requests_per_slot: 3
+  timeout_seconds: 300

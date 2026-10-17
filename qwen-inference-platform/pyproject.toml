@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qwen-inference-platform"
+version = "0.1.0"
+description = "Phase 1 client, benchmark harness, and vLLM serve profile for Qwen2.5-14B-Instruct"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "httpx==0.28.1",
+    "PyYAML==6.0.3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==9.1.1", "prometheus-client>=0.21"]
+metrics = ["prometheus-client>=0.21"]
+
+[project.scripts]
+qwen-inference = "qwen_platform.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["qwen_platform*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

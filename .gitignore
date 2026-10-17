@@ -1,0 +1,15 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# Local tooling and secrets
+.claude/
+.env
+.env.*
+.DS_Store
+
+# Large or machine-specific benchmark artifacts
+*.log

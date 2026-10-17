@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-infra-lab
+  labels:
+    app: ai-infra-lab
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ai-infra-lab
+  template:
+    metadata:
+      labels:
+        app: ai-infra-lab
+    spec:
+      containers:
+        - name: api
+          image: ai-infra-lab:v1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          env:
+            - name: APP_MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: ai-infra-lab
+                  key: APP_MESSAGE
+            - name: API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ai-infra-lab
+                  key: API_TOKEN

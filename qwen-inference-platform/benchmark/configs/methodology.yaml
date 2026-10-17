@@ -1,0 +1,29 @@
+# Planned vLLM measurement. Running this file on the Mac records NOT RUN
+# unless a real server is listening. It does not contain measured latencies.
+schema_version: 1
+endpoint:
+  base_url: http://127.0.0.1:8000/v1
+  model: Qwen/Qwen2.5-14B-Instruct
+  engine: vllm
+workload:
+  # User-text target. API prompt_tokens will be higher because of the chat template.
+  target_input_tokens: 256
+  prompt_profile: null
+  max_output_tokens: 128
+  temperature: 0
+sweep:
+  warmup_requests: 1
+  measured_requests: 8
+  # One command runs the first level. Repeat the command with --concurrency
+  # for 2, then 4, then 8. Continue upward only after those runs exist.
+  concurrency:
+    - 1
+    - 2
+    - 4
+    - 8
+  timeout_seconds: 300
+slo:
+  # Fill these in from a real GPU run before calling any point "safe".
+  p95_ttft_seconds: null
+  p95_tpot_seconds: null
+  p95_e2e_seconds: null

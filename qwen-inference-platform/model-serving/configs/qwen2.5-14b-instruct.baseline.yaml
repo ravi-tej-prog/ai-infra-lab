@@ -1,0 +1,41 @@
+# Baseline serving profile for one NVIDIA GPU.
+# Render with: python -m qwen_platform render-serve --config model-serving/configs/qwen2.5-14b-instruct.baseline.yaml
+# This file does not start a server. vLLM 0.31.0 CUDA wheels are Linux-only.
+schema_version: 1
+profile: qwen2.5-14b-instruct-bf16-single-gpu
+vllm_version: "0.31.0"
+model: Qwen/Qwen2.5-14B-Instruct
+server:
+  # Bind locally until a gateway exists. A later phase can put this behind FastAPI.
+  host: 127.0.0.1
+  port: 8000
+engine:
+  # config.json declares bfloat16. "auto" selects that dtype.
+  dtype: auto
+  # Official BF16 checkpoint has no quantization_config. Leave this null.
+  # Passing a method here would be an extra flag this checkpoint does not need.
+  quantization: null
+  # Prompt plus generated tokens. 8192 matches the model's recommended generation
+  # length and keeps a full sequence's BF16 KV cache at 1.5 GiB.
+  # The checkpoint can address 32768 tokens without YaRN, and 131072 with YaRN.
+  # YaRN stays off: static scaling changes short-prompt behavior, and this
+  # baseline is a short-prompt measurement.
+  max_model_len: 8192
+  # One GPU. Tensor parallel sizes that divide 40 query heads and 8 KV heads
+  # are 1, 2, 4, and 8. Those other sizes are later work.
+  tensor_parallel_size: 1
+  # vLLM 0.31's own default, if this key is omitted, is 0.92.
+  # 0.90 is an explicit headroom choice for this project.
+  gpu_memory_utilization: 0.90
+  # Null means "do not pass the flag". vLLM derives the runtime default in
+  # EngineArgs.create_engine_config. The engine-args page warns that the CLI
+  # placeholder is not the production value, so we do not invent one.
+  max_num_seqs: null
+  max_num_batched_tokens: null
+  kv_cache_dtype: auto
+  # The checkpoint generation_config.json samples with temperature 0.7.
+  # "vllm" skips that file. The override forces greedy decoding for a stable
+  # latency baseline. Request payloads also send temperature 0.
+  generation_config: vllm
+  override_generation_config:
+    temperature: 0.0

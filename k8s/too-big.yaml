@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: too-big
+spec:
+  containers:
+    - name: api
+      image: ai-infra-lab:v1
+      imagePullPolicy: Never
+      resources:
+        requests:
+          cpu: "1"
+          memory: 16Gi

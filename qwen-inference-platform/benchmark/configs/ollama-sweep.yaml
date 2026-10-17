@@ -1,0 +1,24 @@
+# Local sweep on Apple Silicon: input length x concurrency against Ollama.
+# Run once per server setting (model, OLLAMA_NUM_PARALLEL) with its own --label.
+# This is a GGUF comparison on a Mac, not the vLLM NVIDIA baseline.
+schema_version: 1
+endpoint:
+  base_url: http://127.0.0.1:11434/v1
+  model: qwen2.5:14b
+  engine: ollama
+workload:
+  # User-text targets from a 4-chars-per-token estimate. The table reports the
+  # API prompt_tokens count, which includes the chat template.
+  # Kept under 4096 total: Ollama's default context can silently truncate longer prompts.
+  input_tokens: [128, 512, 2048]
+  max_output_tokens: 128
+  temperature: 0
+  # A random tag at the start of each prompt, so prefix caching cannot hide prefill.
+  unique_prompts: true
+sweep:
+  concurrency: [1, 2, 4, 8]
+  warmup_requests: 1
+  # Requests per cell = max(min_requests, requests_per_slot * concurrency).
+  min_requests: 8
+  requests_per_slot: 2
+  timeout_seconds: 300

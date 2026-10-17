@@ -1,0 +1,23 @@
+# Alternate profile for a GPU that cannot hold BF16 weights.
+# The AWQ checkpoint carries quantization_config.quant_method=awq, so this
+# profile does not pass --quantization. vLLM reads the method from the files.
+# Same rule as the Qwen deployment guide: change the model id, keep the flags.
+schema_version: 1
+profile: qwen2.5-14b-instruct-awq-single-gpu
+vllm_version: "0.31.0"
+model: Qwen/Qwen2.5-14B-Instruct-AWQ
+server:
+  host: 127.0.0.1
+  port: 8000
+engine:
+  dtype: auto
+  quantization: null
+  max_model_len: 8192
+  tensor_parallel_size: 1
+  gpu_memory_utilization: 0.90
+  max_num_seqs: null
+  max_num_batched_tokens: null
+  kv_cache_dtype: auto
+  generation_config: vllm
+  override_generation_config:
+    temperature: 0.0

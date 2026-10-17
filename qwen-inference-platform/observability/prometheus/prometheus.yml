@@ -1,0 +1,20 @@
+global:
+  # Short interval: a benchmark cell lasts tens of seconds, not hours.
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  # Client-observed metrics from `qwen_platform sweep --metrics-port 9101`.
+  - job_name: bench-client
+    static_configs:
+      - targets: ["host.docker.internal:9101"]
+
+  # GPU node, later. vLLM serves /metrics on its API port.
+  # - job_name: vllm
+  #   static_configs:
+  #     - targets: ["host.docker.internal:8000"]
+
+  # GPU node, later. NVIDIA DCGM exporter: utilization, memory, power, SM clocks.
+  # - job_name: dcgm
+  #   static_configs:
+  #     - targets: ["host.docker.internal:9400"]

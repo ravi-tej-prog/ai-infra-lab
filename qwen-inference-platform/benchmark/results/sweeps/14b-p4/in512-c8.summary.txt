@@ -1,0 +1,26 @@
+Benchmark summary
+status: completed
+verification: LOCAL_VERIFIED
+vllm_gpu_baseline: False
+engine: ollama
+model: qwen2.5:14b
+endpoint: http://127.0.0.1:11434/v1
+timestamp: 2026-10-16T11:14:31.353153+00:00
+concurrency: 8
+measured_requests: 16
+success_count: 16
+failure_count: 0
+wall_seconds: 117.018602
+TTFT seconds: count=16 mean=27.140479 p50=33.357081 p95=36.159162 min=3.170094 max=37.482967
+TPOT seconds: count=16 mean=0.191449 p50=0.194553 p95=0.208901 min=0.161776 max=0.210104
+E2E seconds: count=16 mean=51.454553 p50=57.935924 p95=60.73678 min=28.055245 max=62.04585
+aggregate output tokens/second: 17.501491
+request throughput per second: 0.13673
+mean inter-chunk latency seconds: 0.191439
+notes:
+- Times are measured on the client. They include network delay and queue wait.
+- TTFT is the arrival of the first non-empty content chunk, not the end of the request.
+- TPOT uses API completion_tokens. Inter-chunk gaps are recorded separately because one SSE event can carry more than one token.
+- This run uses Ollama. It checks the client and the result schema on Apple Silicon. It is a GGUF comparison, and the vLLM NVIDIA baseline remains unmeasured.
+- Each request starts with a random tag, so the server cannot reuse a cached prompt prefix.
+- Warmup request 1 finished and was excluded from the summary.
